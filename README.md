@@ -5,7 +5,8 @@ about each and every memory allocation that occurs in the
 kernel.
 
 ## Authors
-Vyrus
-robadams@illinois.edu
-Claude AI
-Microsoft Copilot
+
+* Vyrus
+* robadams@illinois.edu
+* Claude AI
+* Microsoft Copilot
