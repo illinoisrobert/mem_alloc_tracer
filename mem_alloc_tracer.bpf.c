@@ -15,23 +15,6 @@
 // #include <linux/bpf.h>
 // #include <linux/ring_buffer.h>
 
-#if 0
-// Define a struct to hold event data
-struct event {
-	void* alloc_ip;
-	__u64 pid;
-	void* obj_va_ptr;
-	__s64 size;
-	__u64 alloc_index;
-	__u64 free_index;
-	void* free_ip;
-	int alloc_type;
-	char command[256];
-	char slabname[256];
-	void* new_alloc_type;
-};
-#endif
-
 // eBPF map to store events
 struct {
 	__uint(type, BPF_MAP_TYPE_RINGBUF);
@@ -40,16 +23,8 @@ struct {
 	// .max_entries = 256 * 1024,
 } events SEC(".maps");
 
-// struct {
-//     __uint(type, BPF_MAP_TYPE_RINGBUF);
-//     __type(key, int);
-//     __type(value, struct event);
-//     __uint(max_entries, 16);
-// } icmpcnt SEC(".maps");
-
 // Avoid watching this pid
 volatile int reporter_pid = 0;
-
 
 // Broadcast event function
 static int broadcast_event(struct pt_regs *ctx) {
@@ -90,9 +65,11 @@ SEC("kprobe/__kmalloc_noprof")
 int BPF_KPROBE(kprobe_kmalloc_noprof, size_t size, gfp_t flags) {
 	return broadcast_event(ctx);
 }
+
 SEC("kprobe/__kmalloc_large_noprof")
 int BPF_KPROBE(kprobe_kmalloc_large_noprof, size_t size, gfp_t flags) {
 	return broadcast_event(ctx);
 }
+
 
 char LICENSE[] SEC("license") = "GPL";
